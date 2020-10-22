@@ -5,9 +5,17 @@
 
 using namespace std;
 
-void error(const string& msg) {
-    perror(msg.c_str());
-    exit(-1);
+void error(const char* msg, int num) {
+    perror(msg);
+    exit(num);
+}
+
+void error(const string& msg, int num) {
+    error(msg.c_str(), num);
+}
+
+void log(const char* msg) {
+    cout << msg;
 }
 
 void log(const string& msg) {

@@ -9,8 +9,7 @@ char* initBuffer(size_t size){
 	char *buff = (char*)malloc(RES_SIZE);
 
 	if( buff == NULL) {
-		perror("malloc");
-		exit(-1);
+		error("malloc", -1);
 	}
 
 	memset(buff, 0, RES_SIZE);
@@ -24,7 +23,7 @@ void getFstWd(char* buff, size_t size) {
 		if (buff[i] == '\0' || i >= size) {
 			break;
 		}
-		if (buff[i] == ' ') {
+		if (buff[i] == ' ') { // replace the first ' ' with '\0'
 			buff[i] = '\0';
 			break;
 		}
@@ -33,44 +32,40 @@ void getFstWd(char* buff, size_t size) {
 }
 
 void getDevices(list<string>& devices) {
-	// init buff
+
 	char *buff = initBuffer(RES_SIZE);
 
-	// init fp
-	FILE *fp = popen("xrandr --query | grep \" connected \"", "r");
+	FILE *fp = popen("xrandr --query | grep \" connected \"", "r"); //exec `xrandr --query | grep " connected "`
 	
 	if (fp == NULL) {
-		perror("popen error");
 		free(buff);
-		exit(-1);
+		error("popen error", -2);
 	}
 
-	// get devices
-	devices.clear();
+	devices.clear(); // the function would be executed multiple times
 	log("devices: ");
     while (true) {
         fgets(buff, RES_SIZE, fp);
 		getFstWd(buff, RES_SIZE);
 		string str = buff;
-		if (devices.size() > 0 && str == devices.back()) {
+		if (devices.size() > 0 && str == devices.back()) { // when having reached the last line of output, it will repeatedly read in the same
 			break;
 		}
 		log(str + " ");
-	    devices.push_back(buff);
+	    devices.push_back(buff); // enque them in the scanned order
     }
 	log("\n");
 
-	// release
 	pclose(fp);
 	free(buff);
 }
 
-void setDevicesBrightness(list<string>& devices, double brightness) {
-	char* buff = initBuffer(RES_SIZE);
+void setDevicesBrightness(list<string>& devices, float brightness) {
+	string&& strBrightness = to_string(brightness);
 
-	for (list<string>::const_iterator iter = devices.begin(); iter != devices.end(); iter++) {
-		string&& strBrightness = to_string(brightness);
-		log("set brightness of device " + *iter + " to " + strBrightness + "\n");
-		system(("xrandr --output " + *iter + " --brightness " + strBrightness).c_str());
+	// exec `xrandr --output <device> --brightness <num>` for each device
+	for (auto it = devices.begin(); it != devices.end(); it++) {
+		log("set brightness of device " + *it + " to " + strBrightness + "\n");
+		system(("xrandr --output " + *it + " --brightness " + strBrightness).c_str());
 	}
 }

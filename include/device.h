@@ -7,4 +7,4 @@
 
 void getDevices(std::list<std::string>& devices);
 
-void setDevicesBrightness(std::list<std::string>& devices, double brightness);
+void setDevicesBrightness(std::list<std::string>& devices, float brightness);

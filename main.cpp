@@ -18,23 +18,23 @@ int main() {
 	getFolder(path);
 
 	unsigned int maxBrightness = getMaxBrightness(path);
-	unsigned int prevBrightness = getBrightness(path);
-	unsigned int brightness;
-	setDevicesBrightness(devices, (double)prevBrightness/maxBrightness);
+	unsigned int prevBrightness, brightness;
 
-	unsigned int i = RESCAN_CYCLES;
+	unsigned int i = 0;
 	
 	while (true) {
 		brightness = getBrightness(path);
-		if (brightness != prevBrightness) {
-			setDevicesBrightness(devices, (double)brightness/maxBrightness);
-			prevBrightness = brightness;
-		}
 
 		if (i == 0) {
 			getDevices(devices);
+			setDevicesBrightness(devices, (float)brightness/maxBrightness);
+			prevBrightness = brightness;
 			i = RESCAN_CYCLES;
+		} else if (brightness != prevBrightness) {
+			setDevicesBrightness(devices, (float)brightness/maxBrightness);
+			prevBrightness = brightness;
 		}
+		
 		i--;
 
 		usleep(SLEEP_US);
