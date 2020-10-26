@@ -52,5 +52,5 @@ unsigned int getMaxBrightness(const string& path) {
 }
 
 unsigned int getBrightness(const string& path) {
-	return readNum(path + "/actual_brightness"); // if it doesn't work, change "/actual_brightness" to "/brightness" may fix it
+	return readNum(path + "/brightness"); // if it doesn't work, change "/brightness" to "/actual_brightness" may fix it
 }
